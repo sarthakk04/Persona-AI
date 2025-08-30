@@ -10,7 +10,12 @@ export const asyncHandler = (fn) => async (req, ctx) => {
     const message = err.message || "Something went wrong";
 
     return NextResponse.json(
-      new ApiError(statusCode, message, err.errors || []),
+      {
+        success: false,
+        statusCode,
+        message,
+        errors: err.errors || [],
+      },
       { status: statusCode }
     );
   }
