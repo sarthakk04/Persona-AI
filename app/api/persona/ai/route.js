@@ -50,7 +50,6 @@ export const POST = asyncHandler(async (req) => {
     chatCompletion.choices[0]?.message?.content || "No content";
   //TODO : uncomment later
 
-
   // Parse Groq output to JSON
   let personaObj;
 
@@ -68,9 +67,3 @@ export const POST = asyncHandler(async (req) => {
     new ApiResponse(200, person, "Persona saved successfully")
   );
 });
-
-// To install: npm i @tavily/core
-// const { tavily } = require('@tavily/core');
-// const client = tavily({ apiKey: "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" });
-// client.search("")
-// .then(console.log);

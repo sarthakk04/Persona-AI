@@ -10,6 +10,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.16.0",
+    "@google/generative-ai": "^0.24.1",
     "@tavily/core": "^0.5.11",
     "groq-sdk": "^0.30.0",
     "mongoose": "^8.18.0",
