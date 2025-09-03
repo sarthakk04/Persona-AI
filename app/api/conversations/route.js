@@ -31,7 +31,7 @@ export const POST = asyncHandler(async (req) => {
   });
 
   return NextResponse.json(
-    new ApiResponse(200, "Conversation added successfully")
+    new ApiResponse(200, conversation._id, "Conversation added successfully")
   );
 });
 

@@ -8,14 +8,14 @@ import { NextResponse } from "next/server";
 export const GET = asyncHandler(async (req, { params }) => {
   await connectDB();
 
-  const { id } = params;
+  const { id } = await params;
   if (!id) {
     throw new ApiError(400, "id of the persona required");
   }
   const persona = await Personas.findById(id);
 
   if (!persona) {
-    ApiError(401, "no persona with this id");
+    ApiError(404, "no persona with this id");
   }
 
   return NextResponse.json(

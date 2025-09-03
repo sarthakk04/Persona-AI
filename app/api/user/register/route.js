@@ -28,6 +28,10 @@ export const POST = asyncHandler(async (req) => {
   });
 
   return NextResponse.json(
-    new ApiResponse(200, user, "user registered successfully")
+    new ApiResponse(
+      200,
+      { username: user.username },
+      "user registered successfully"
+    )
   );
 });
