@@ -6,7 +6,8 @@ import { ApiError } from "@/utils/ApiError";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
 // Correctly import the main class
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 export const POST = asyncHandler(async (req, { params }) => {
   await connectDB();
@@ -32,10 +33,10 @@ export const POST = asyncHandler(async (req, { params }) => {
   });
 
   // 1. Correctly initialize the SDK client
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  // const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   // 2. Get the specific generative model you want to use
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // <-- CORRECT MODEL NAME
+  // const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // <-- CORRECT MODEL NAME
 
   // Build context: last 5 messages
   const history = await Messages.find({ conversationFrom: convoId })
@@ -94,54 +95,87 @@ AI (as ${persona.personaname}):
   // }
 
   // getting response through stream
-  // 1. Start streaming
-  const stream = await model.generateContentStream({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-  });
 
-  /*Streaming as Json failed
+  //TODO : STREAMING THROUGH GEMINI
 
+  // // 1. Start streaming
+  // const stream = await model.generateContentStream({
+  //   contents: [{ role: "user", parts: [{ text: prompt }] }],
+  // });
 
+  // // NEW CODE
+  // let aiResponse = "";
 
+  // // 6️⃣ Create a readable stream to send chunks to frontend
+  // const encoder = new TextEncoder();
+  // const readableStream = new ReadableStream({
+  //   async start(controller) {
+  //     for await (const chunk of stream.stream) {
+  //       const text = chunk?.text();
+  //       if (text) {
+  //         aiResponse += text;
+  //         controller.enqueue(encoder.encode(text)); // stream chunk to frontend
+  //       }
+  //     }
+  //     controller.close();
 
-  // 2. Prepare AI response accumulator
-  let aiResponse = "";
+  //     // 7️⃣ After streaming finishes, save AI message
+  //     await Messages.create({
+  //       conversationFrom: convoId,
+  //       sender: "ai",
+  //       content: aiResponse,
+  //     });
+  //   },
+  // });
+  // return new NextResponse(readableStream, {
+  //   headers: { "Content-Type": "text/plain; charset=utf-8" },
+  // });
 
-  // 3. Iterate over the stream chunks
-  for await (const chunk of stream.stream) {
-    const chunkText = chunk?.text();
-    if (chunkText) {
-      aiResponse += chunkText;
-      // Optionally: push partial response to client via SSE / WebSocket here
-    }
-  }
-*/
+  //TODO : STREAMING THROUGH GROQ
+  // ✅ Groq streaming
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  // NEW CODE
-  let aiResponse = "";
-
-  // 6️⃣ Create a readable stream to send chunks to frontend
+  // Create a readable stream
   const encoder = new TextEncoder();
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream.stream) {
-        const text = chunk?.text();
-        if (text) {
-          aiResponse += text;
-          controller.enqueue(encoder.encode(text)); // stream chunk to frontend
-        }
-      }
-      controller.close();
+  let aiResponse = "";
 
-      // 7️⃣ After streaming finishes, save AI message
-      await Messages.create({
-        conversationFrom: convoId,
-        sender: "ai",
-        content: aiResponse,
+  const stream = new ReadableStream({
+    async start(controller) {
+      const completion = await groq.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        temperature: 0.2,
+        max_completion_tokens: 1200,
+        stream: true, // 👈 IMPORTANT
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content },
+        ],
       });
+
+      try {
+        for await (const chunk of completion) {
+          const text = chunk.choices[0]?.delta?.content || "";
+          if (text) {
+            aiResponse += text;
+            controller.enqueue(encoder.encode(text)); // send partial chunk
+          }
+        }
+      } catch (err) {
+        console.error("Stream error:", err);
+        controller.error(err);
+      } finally {
+        controller.close();
+        // Save final AI message after streaming finishes
+        await Messages.create({
+          conversationFrom: convoId,
+          sender: "ai",
+          content: aiResponse,
+        });
+      }
     },
   });
-  return new NextResponse(readableStream, {
+
+  return new NextResponse(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 });

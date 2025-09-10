@@ -61,11 +61,11 @@ export default function ChatPage({ params }) {
         setConversationId(convoId);
 
         // 2️⃣ Send initial "Hello!" message
-        await fetch(`/api/conversations/${convoId}/messages`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sender: "user", content: "Hello!" }),
-        });
+        // await fetch(`/api/conversations/${convoId}/messages`, {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ sender: "user", content: "Hello!" }),
+        // });
 
         // 3️⃣ Fetch existing messages
         const messagesRes = await fetch(
@@ -89,6 +89,7 @@ export default function ChatPage({ params }) {
 
     // 1️⃣ Add user message
     const newMessage = { sender: "user", content: userInput };
+
     setMessages((prev) => [...prev, newMessage]);
     setUserInput("");
     setAiTyping(true);
@@ -107,17 +108,26 @@ export default function ChatPage({ params }) {
 
       // 2️⃣ Initialize AI message in state
       setMessages((prev) => [...prev, { sender: "ai", content: "" }]);
-
+      let gotAnyChunk = false;
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
+        if (chunk) gotAnyChunk = true;
 
         // 3️⃣ Append chunk to last AI message
         setMessages((prev) => {
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content += chunk;
+          return newMessages;
+        });
+      }
+      if (!gotAnyChunk) {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content =
+            "⚠️ Failed to get AI response";
           return newMessages;
         });
       }
@@ -142,17 +152,28 @@ export default function ChatPage({ params }) {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto mb-4 space-y-2">
         {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`p-2 rounded-lg max-w-xs ${
-              msg.sender === "user"
-                ? "bg-blue-500 text-white self-end"
-                : "bg-gray-200"
-            }`}
-          >
-            {msg.content}
+          <div key={index} className="flex flex-col items-start">
+            <span
+              className={`text-xs font-semibold mb-1 ${
+                msg.sender === "user"
+                  ? "text-blue-500 self-end"
+                  : "text-gray-600"
+              }`}
+            >
+              {msg.sender === "user" ? "You" : "AI"}
+            </span>
+            <div
+              className={`p-2 rounded-lg max-w-xs ${
+                msg.sender === "user"
+                  ? "bg-blue-500 text-white self-end"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
+              {msg.content}
+            </div>
           </div>
         ))}
+
         {aiTyping && (
           <div className="italic text-gray-500">AI is typing...</div>
         )}
