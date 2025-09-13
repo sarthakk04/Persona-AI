@@ -1,10 +1,11 @@
-"use client";
-
+import Splinecomp from '@/landingPage/splinecomp'
+import Landing from '@/landingPage/landing'
 export default function Home() {
   return (
     <>
       <div style={{ width: "100%", height: "9--px", position: "relative" }}>
-        <h1>hii</h1>
+        <Splinecomp/>
+       <Landing/>
       </div>
     </>
   );
