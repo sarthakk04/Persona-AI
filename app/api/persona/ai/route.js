@@ -5,8 +5,8 @@ import { ApiResponse } from "@/utils/ApiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { NextResponse } from "next/server";
 import { tavily } from "@tavily/core";
-import Groq from "groq-sdk";
 import { systemPrompt, userPrompt } from "@/constants";
+import { createGroqClient } from "@/services/groq";
 export const POST = asyncHandler(async (req) => {
   await connectDB();
 
@@ -32,28 +32,14 @@ export const POST = asyncHandler(async (req) => {
   //Feeding Tavily response to Groq for prompt generation
   const system = systemPrompt;
   const user = userPrompt(tavilySummary);
-  const groq = new Groq();
-  const chatCompletion = await groq.chat.completions.create({
-    messages: [
-      { role: "system", content: system },
-      { role: "user", content: user.join("\n") },
-    ],
-    model: "llama-3.1-8b-instant",
-    temperature: 0.2,
-    max_completion_tokens: 1200,
-    top_p: 1,
-    stream: false,
-    stop: null,
-  });
 
-  const groqOutput =
-    chatCompletion.choices[0]?.message?.content || "No content";
+  // const groqOutput = createGroqClient(system, user);
   //TODO : uncomment later
 
   // Parse Groq output to JSON
   let personaObj;
 
-  personaObj = JSON.parse(groqOutput);
+  personaObj = await createGroqClient(system, user);
 
   if (!personaObj) {
     throw new ApiError(400, "Groq output is not valid JSON");
