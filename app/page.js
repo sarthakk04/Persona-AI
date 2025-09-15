@@ -1,9 +1,12 @@
-"use client";
-
+import Splinecomp from '@/landingPage/splinecomp'
+import Landing from '@/landingPage/landing'
 export default function Home() {
   return (
     <>
-      <h1>This is the dashboard</h1>
+      <div style={{ width: "100%", height: "9--px", position: "relative" }}>
+        <Splinecomp/>
+       <Landing/>
+      </div>
     </>
   );
 }
