@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function ChatPage({ params }) {
   const searchParams = useSearchParams();
@@ -32,10 +33,6 @@ export default function ChatPage({ params }) {
   useEffect(scrollToBottom, [messages, aiTyping]);
 
   useEffect(() => {
-    const username = localStorage.getItem("username");
-    if (!username) {
-      router.push("/user/register"); // 🚨 redirect if not registered
-    }
     const startConversation = async () => {
       const username = localStorage.getItem("username");
       if (!username) {
@@ -60,14 +57,7 @@ export default function ChatPage({ params }) {
         const convoId = convoData.data;
         setConversationId(convoId);
 
-        // 2️⃣ Send initial "Hello!" message
-        // await fetch(`/api/conversations/${convoId}/messages`, {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ sender: "user", content: "Hello!" }),
-        // });
-
-        // 3️⃣ Fetch existing messages
+        // 2️⃣ Fetch existing messages
         const messagesRes = await fetch(
           `/api/conversations/${convoId}/messages`
         );
@@ -140,7 +130,7 @@ export default function ChatPage({ params }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen flex-col text-gray-600">
+      <div className="flex items-center justify-center h-screen flex-col text-gray-400 bg-[#100044]">
         <div className="loader mb-4"></div>
         <p>{loadingMessage}</p>
       </div>
@@ -148,34 +138,45 @@ export default function ChatPage({ params }) {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto flex flex-col h-screen">
+    <div className="p-6 max-w-2xl mx-auto flex flex-col h-screen bg-[#100044] text-white">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-2">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-3 scrollbar-thin scrollbar-thumb-[#c87afe]/60 scrollbar-track-transparent">
         {messages.map((msg, index) => (
-          <div key={index} className="flex flex-col items-start">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+          >
             <span
               className={`text-xs font-semibold mb-1 ${
-                msg.sender === "user"
-                  ? "text-blue-500 self-end"
-                  : "text-gray-600"
+                msg.sender === "user" ? "text-[#c87afe]" : "text-gray-400"
               }`}
             >
               {msg.sender === "user" ? "You" : "AI"}
             </span>
             <div
-              className={`p-2 rounded-lg max-w-xs ${
+              className={`p-3 rounded-2xl max-w-xs shadow-md transition-all duration-200 hover:scale-[1.02] ${
                 msg.sender === "user"
-                  ? "bg-blue-500 text-white self-end"
-                  : "bg-gray-200 text-black"
+                  ? "bg-[#c87afe] text-white"
+                  : "bg-gray-800 text-gray-100"
               }`}
             >
               {msg.content}
             </div>
-          </div>
+          </motion.div>
         ))}
 
         {aiTyping && (
-          <div className="italic text-gray-500">AI is typing...</div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="italic text-gray-400"
+          >
+            AI is typing...
+          </motion.div>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -187,17 +188,19 @@ export default function ChatPage({ params }) {
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Type your message..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 border border-gray-700 bg-gray-900 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#c87afe] transition"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSendMessage();
           }}
         />
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleSendMessage}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-5 py-2 bg-[#c87afe] text-white rounded-lg shadow-md hover:bg-[#b55ef0] transition"
         >
           Send
-        </button>
+        </motion.button>
       </div>
     </div>
   );
