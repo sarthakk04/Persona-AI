@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react"; // 👈 close icon
+import SpotlightCard from "@/components/SpotlightCard";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -72,7 +73,7 @@ export default function Dashboard() {
         const data = await res.json();
 
         // Newest first
-        setPersonas((data.data || []).reverse());
+        setPersonas(data.data || []);
       } catch (err) {
         console.error("Error fetching personas:", err);
       } finally {
@@ -119,25 +120,28 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#100044] text-white p-6 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f002b] via-[#180046] to-[#2a0066] text-white p-6 space-y-8 transition-colors duration-700">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h1 className="text-3xl font-extrabold tracking-wide">
-          Persona Dashboard
-        </h1>
+        {/* <h1 className="text-3xl font-extrabold tracking-wide bg-gradient-to-r from-[#c87afe] to-[#6d28d9] bg-clip-text text-transparent animate-fadeIn"> */}
+        <img src="/logo.png" alt="Logo" className="h-22 w-auto" />
+        {/* </h1> */}
         <input
           type="text"
           placeholder="🔍 Search personas..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border border-[#c87afe] bg-black text-white rounded-lg px-4 py-2 w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-[#c87afe]"
+          className={`border border-[#c87afe]/70 bg-black/40 text-white rounded-lg px-4 py-2 w-full sm:w-72
+            focus:outline-none focus:ring-2 focus:ring-[#c87afe] transition-all duration-300`}
         />
       </div>
 
       {/* Create with AI block */}
       <div
         onClick={() => setShowModal(true)}
-        className="cursor-pointer border-2 border-dashed border-[#c87afe] rounded-xl p-8 text-center text-[#c87afe] hover:bg-black hover:text-white transition"
+        className="cursor-pointer border-2 border-dashed border-[#c87afe] rounded-xl p-8 text-center text-[#c87afe] 
+          hover:bg-gradient-to-r hover:from-[#c87afe]/20 hover:to-[#6d28d9]/30 hover:scale-105 transition-transform duration-300"
+        style={{ fontFamily: "cardHeading" }}
       >
         + Create Persona with AI
       </div>
@@ -149,34 +153,45 @@ export default function Dashboard() {
           Array(6)
             .fill(0)
             .map((_, i) => (
-              <div
+              <SpotlightCard
                 key={i}
-                className="animate-pulse border border-[#c87afe]/30 rounded-xl p-4 bg-black"
+                spotlightColor="rgba(200, 122, 254, 0.15)"
+                className="p-6 rounded-xl animate-pulse"
               >
                 <div className="h-6 w-2/3 bg-[#c87afe]/30 rounded mb-3"></div>
                 <div className="h-4 w-full bg-[#c87afe]/20 rounded mb-2"></div>
                 <div className="h-4 w-4/5 bg-[#c87afe]/20 rounded"></div>
-              </div>
+              </SpotlightCard>
             ))
         ) : filtered.length > 0 ? (
           filtered.map((persona) => (
-            <div
+            <SpotlightCard
               key={persona._id}
-              className="border border-[#c87afe] rounded-xl shadow-lg p-6 flex flex-col justify-between bg-black hover:shadow-[#c87afe]/40 transition"
+              spotlightColor="rgba(200, 122, 254, 0.2)"
+              className="p-6 rounded-xl flex flex-col justify-between transition-all duration-300"
             >
               <div>
-                <h2 className="text-xl font-semibold mb-2 text-[#c87afe]">
+                <h2
+                  className="text-xl font-semibold mb-2 text-[#c87afe] "
+                  style={{ fontFamily: "cardHeading" }}
+                >
                   {persona.personaname}
                 </h2>
-                <p className="text-gray-300 text-sm">{persona.description}</p>
+                <p
+                  className="text-gray-200 text-sm"
+                  style={{ fontFamily: "cardDesc" }}
+                >
+                  {persona.description}
+                </p>
               </div>
               <button
-                className="mt-4 bg-[#c87afe] hover:bg-[#a94fe8] text-black font-semibold px-4 py-2 rounded-lg transition"
+                className="mt-4 bg-gradient-to-r from-[#c87afe] to-[#a94fe8] hover:from-[#a94fe8] hover:to-[#c87afe] 
+                  text-black font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer"
                 onClick={() => router.push(`/chat/${persona._id}`)}
               >
                 Chat
               </button>
-            </div>
+            </SpotlightCard>
           ))
         ) : (
           <p className="col-span-full text-center text-gray-400">
@@ -187,8 +202,11 @@ export default function Dashboard() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="relative bg-[#100044] border border-[#c87afe] rounded-xl p-6 w-96 space-y-4 shadow-lg shadow-[#c87afe]/30">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
+          <div
+            className="relative bg-gradient-to-br from-[#0f002b] via-[#180046] to-[#2a0066] 
+            border border-[#c87afe] rounded-xl p-6 w-96 space-y-4 shadow-lg shadow-[#c87afe]/30 animate-fadeIn"
+          >
             {/* Close button */}
             <button
               onClick={() => setShowModal(false)}
@@ -197,7 +215,10 @@ export default function Dashboard() {
               <X size={22} />
             </button>
 
-            <h2 className="text-xl font-semibold text-[#c87afe]">
+            <h2
+              className="text-xl  text-[#c87afe]"
+              style={{ fontFamily: "cardHeading" }}
+            >
               Create Persona with AI
             </h2>
             <input
@@ -205,19 +226,22 @@ export default function Dashboard() {
               placeholder={displayText}
               value={newPersonaName}
               onChange={(e) => setNewPersonaName(e.target.value)}
-              className="border border-[#c87afe] bg-black text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#c87afe]"
+              className={`border border-[#c87afe] bg-black/40 text-white rounded-lg px-3 py-2 w-full 
+                focus:outline-none focus:ring-2 focus:ring-[#c87afe] transition-all duration-300`}
             />
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-lg border border-gray-500 text-gray-300 hover:bg-gray-800"
+                className="px-4 py-2 rounded-lg border border-gray-500 text-gray-300 hover:bg-gray-800 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateAI}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg bg-[#c87afe] text-black font-semibold hover:bg-[#a94fe8] disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#c87afe] to-[#a94fe8] 
+                  text-black font-semibold hover:from-[#a94fe8] hover:to-[#c87afe] 
+                  disabled:opacity-50 transition-all duration-300"
               >
                 {loading ? "Creating..." : "Submit"}
               </button>

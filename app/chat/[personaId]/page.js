@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import LoaderNormal from "@/components/loaderNormal"; // 👈 adjust path if needed
 
 export default function ChatbotDetails() {
   const router = useRouter();
@@ -32,27 +33,48 @@ export default function ChatbotDetails() {
   if (!persona) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#100044] text-gray-300">
-        Loading...
+        <LoaderNormal />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#100044] flex flex-col items-center justify-center text-white p-6 space-y-8">
-      <h1 className="text-5xl sm:text-6xl font-extrabold text-[#c87afe] text-center">
+    <div className="relative min-h-screen bg-[#100044] flex flex-col items-center justify-center text-white p-6 space-y-8">
+      {/* Logo in top-left corner */}
+      <img
+        src="/logo.png"
+        alt="Logo"
+        className="absolute top-4 left-4 h-22 w-auto"
+      />
+
+      <h1
+        className="text-5xl sm:text-6xl font-extrabold text-[#c87afe] text-center"
+        style={{ fontFamily: "cardHeading" }}
+      >
         {persona.personaname}
       </h1>
+
       {persona.description && (
-        <p className="text-center text-gray-300 text-lg sm:text-xl max-w-2xl">
+        <p
+          className="text-center text-gray-300 text-lg sm:text-xl max-w-2xl"
+          style={{ fontFamily: "cardDesc" }}
+        >
           {persona.description}
         </p>
       )}
+
       <div className="text-center space-y-4">
-        <p className="text-white text-2xl sm:text-3xl font-semibold">
+        <p
+          className="text-white text-2xl sm:text-3xl font-semibold"
+          style={{ fontFamily: "cardDesc" }}
+        >
           👋 Hello! Are you ready to talk with me?
         </p>
-        <p className="text-gray-400">Let’s get started and explore together!</p>
+        <p className="text-gray-400" style={{ fontFamily: "cardDesc" }}>
+          Let’s get started and explore together!
+        </p>
       </div>
+
       <div className="flex flex-col sm:flex-row gap-4 mt-6">
         <button
           onClick={() => router.back()}
