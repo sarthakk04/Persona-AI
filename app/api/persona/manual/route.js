@@ -5,7 +5,6 @@ import { ApiResponse } from "@/utils/ApiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { NextResponse } from "next/server";
 
-
 //For Admin Purpose only
 export const POST = asyncHandler(async (req) => {
   await connectDB();

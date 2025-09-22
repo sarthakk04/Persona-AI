@@ -120,7 +120,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f002b] via-[#180046] to-[#2a0066] text-white p-6 space-y-8 transition-colors duration-700">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#110046] to-black text-white p-6 space-y-8 transition-colors duration-700">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         {/* <h1 className="text-3xl font-extrabold tracking-wide bg-gradient-to-r from-[#c87afe] to-[#6d28d9] bg-clip-text text-transparent animate-fadeIn"> */}

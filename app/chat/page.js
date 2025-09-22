@@ -199,30 +199,38 @@ export default function ChatPage({ params }) {
       </div>
 
       {/* Input area */}
-      <div className="flex w-full max-w-3xl space-x-2">
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 bg-white/10 border border-[#c87afe]/40 
+      <div className="flex w-full max-w-3xl flex-col space-y-2">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 bg-white/10 border border-[#c87afe]/40 
         text-white rounded-2xl px-4 py-3 
         placeholder-gray-400 shadow-inner
         focus:outline-none focus:ring-2 focus:ring-[#c87afe] transition"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSendMessage();
-          }}
-        />
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleSendMessage}
-          className="px-6 py-3 rounded-2xl font-semibold 
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSendMessage();
+            }}
+          />
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleSendMessage}
+            className="px-6 py-3 rounded-2xl font-semibold 
         bg-gradient-to-r from-[#c87afe] to-[#a94fe8] 
         text-white shadow-md hover:shadow-xl transition cursor-pointer"
-        >
-          Send
-        </motion.button>
+          >
+            Send
+          </motion.button>
+        </div>
+        {/* Detailed note below the chat input */}
+        <p className="text-xs text-gray-400 text-center">
+          ⚠️ Persona AI is designed to provide helpful responses, but it may
+          occasionally make mistakes or provide information that is not fully
+          accurate. Please use your own judgment when considering its answers.
+        </p>
       </div>
     </div>
   );

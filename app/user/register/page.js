@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SpotlightCard from "@/components/SpotlightCard"; // ✅ adjust the import path if needed
 
 export default function RegisterPage() {
@@ -8,6 +8,16 @@ export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    // Check localStorage only in the browser
+    const username = localStorage.getItem("username");
+
+    if (username) {
+      // Redirect to dashboard if already registered
+      router.replace("/dashboard");
+    }
+  }, [router]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -40,7 +50,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#100044] flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-black via-[#110046] to-black flex items-center justify-center overflow-hidden">
       {/* Logo in top-left corner */}
       <img
         src="/logo.png"
