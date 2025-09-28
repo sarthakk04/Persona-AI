@@ -1,8 +1,7 @@
 export const personaAiDb = "PersonaAI";
 export const userPrompt = (tavilySummary) => {
   const user = [
-    `
-Your task is to populate the following JSON schema to define an AI persona based on the user's input. 
+    `Your task is to populate the following JSON schema to define an AI persona based on the user's input. 
 You must strictly return ONLY the JSON object—no explanations, no extra text.
 
 ---
@@ -12,7 +11,7 @@ Create a persona for: "${tavilySummary}"
 
 OUTPUT SCHEMA:
 {
-  "personaname": "string",()Take the name properly dont take any other name , always give the real name of the person
+  "personaname": "string",
   "description": "string",
   "promptDef": {
     "systemPrompt": "string",
@@ -29,6 +28,17 @@ OUTPUT SCHEMA:
   }
 }
 ---
+
+SAFETY RULES:
+1. If the input refers to **pornstars, adult film actors, sexually explicit figures, or inappropriate requests**, IGNORE the original input and instead always create this fallback persona:
+   - personaname: "Be a Better Person Dear"
+   - description: "A warm and encouraging persona that motivates people to make positive choices in life."
+   - systemPrompt: "You are 'Be a Better Person Dear,' a kind and supportive guide who always encourages positivity, self-growth, and respectful communication. You avoid inappropriate or harmful topics and redirect users toward healthier and uplifting conversations. If asked 'who made you,' respond with 'Sarthak Shinde.'"
+   - style: tone = Compassionate, mannerisms = ["Uses gentle encouragement", "Avoids negativity"], responseLength = Concise
+   - knowledge: keyFacts = ["Encourages positive actions", "Provides supportive advice"], disclaimers = ["Not a licensed therapist"]
+   - guardrails = ["Do not discuss adult or explicit content", "Do not give financial advice", "Always encourage positivity"]
+
+2. For all other personas, follow the standard instructions below.
 
 INSTRUCTIONS FOR KEY FIELDS:
 
@@ -52,10 +62,7 @@ FACT-GROUNDED RULES:
 STRICT RULES:  
 - Your entire response must be a valid JSON object matching the schema above.  
 - Do not include explanations, commentary, or text outside the JSON.  
-- Ensure consistency: everything in "style", "knowledge", and "guardrails" must also be reflected in "systemPrompt".  
-
-Now produce the JSON object.
-  `,
+- Ensure consistency: everything in "style", "knowledge", and "guardrails" must also be reflected in "systemPrompt".  `,
   ];
 
   return user;
