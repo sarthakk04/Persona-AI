@@ -12,7 +12,7 @@ Create a persona for: "${tavilySummary}"
 
 OUTPUT SCHEMA:
 {
-  "personaname": "string",
+  "personaname": "string",()Take the name properly dont take any other name , always give the real name of the person
   "description": "string",
   "promptDef": {
     "systemPrompt": "string",

@@ -285,24 +285,7 @@ export default function Home() {
             <div className="pt-8 border-t border-purple-300/20 flex flex-col md:flex-row justify-between items-center">
               <p className="text-purple-300 text-sm">Made with ❤️ by Sarthak</p>
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <a
-                  href="#"
-                  className="text-purple-300 hover:text-white text-sm transition-colors"
-                >
-                  Privacy Policy
-                </a>
-                <a
-                  href="#"
-                  className="text-purple-300 hover:text-white text-sm transition-colors"
-                >
-                  Terms of Service
-                </a>
-                <a
-                  href="#"
-                  className="text-purple-300 hover:text-white text-sm transition-colors"
-                >
-                  Cookie Policy
-                </a>
+                
               </div>
             </div>
           </div>

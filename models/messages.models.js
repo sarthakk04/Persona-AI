@@ -20,6 +20,7 @@ const messagesSchema = new Schema(
   { timestamps: true }
 );
 
+messagesSchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
 export const Messages =
   mongoose.models.Messages || mongoose.model("Messages", messagesSchema);

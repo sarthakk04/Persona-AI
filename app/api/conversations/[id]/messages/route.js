@@ -145,7 +145,7 @@ AI (as ${persona.personaname}):
         model: "llama-3.1-8b-instant",
         temperature: 0.2,
         max_completion_tokens: 1200,
-        stream: true, // 👈 IMPORTANT
+        stream: true, 
         messages: [
           { role: "system", content: prompt },
           { role: "user", content },

@@ -1,6 +1,7 @@
 // app/layout.js (Server)
 import "./globals.css";
 import ClientWrapper from "./clientWrapper";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Persona AI",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo.png" />
       </head>
       <body>
+        <Analytics />
         <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
