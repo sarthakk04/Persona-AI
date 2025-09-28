@@ -43,11 +43,11 @@ export default function TutorialSection() {
             ></iframe>
 
             {/* Overlay Play button (optional if not autoplay) */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition duration-500">
+            {/* <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition duration-500">
               <button className="flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg hover:scale-110 transform transition">
                 <Play className="w-10 h-10 text-white" />
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
