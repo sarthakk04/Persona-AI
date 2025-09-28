@@ -152,7 +152,10 @@ export default function Home() {
                   Join thousands of users already experiencing the future of
                   conversation with AI technology.
                 </p>
-                <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-10 py-4 rounded-full text-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-xl hover:shadow-purple-500/30">
+                <button
+                  onClick={() => router.push("/user/register")}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-10 py-4 rounded-full text-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-xl hover:shadow-purple-500/30"
+                >
                   Get Started Today
                 </button>
               </div>
@@ -284,9 +287,7 @@ export default function Home() {
 
             <div className="pt-8 border-t border-purple-300/20 flex flex-col md:flex-row justify-between items-center">
               <p className="text-purple-300 text-sm">Made with ❤️ by Sarthak</p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
-                
-              </div>
+              <div className="flex space-x-6 mt-4 md:mt-0"></div>
             </div>
           </div>
         </footer>
