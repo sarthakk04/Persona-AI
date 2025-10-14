@@ -9,11 +9,6 @@ const userSchema = new Schema(
       unique: true,
       index: true,
     },
-    expiresAt: {
-      type: Date,
-      default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from creation
-      index: { expires: 0 }, // TTL index
-    },
   },
   { timestamps: true }
 );
