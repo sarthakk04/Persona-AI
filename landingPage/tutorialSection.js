@@ -21,7 +21,7 @@ export default function TutorialSection() {
           style={{ fontFamily: "cardDesc" }}
         >
           Watch this short tutorial to get started with our AI companions and
-          explore the features built just for you.
+          explore the features built just for you!
         </p>
 
         {/* Video Container */}
