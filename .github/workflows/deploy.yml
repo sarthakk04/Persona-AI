@@ -25,21 +25,19 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Copy project to EC2
+      - name: Verify build files
+        run: ls -la
+
+      - name: Copy build files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: |
-            .next
-            package.json
-            package-lock.json
-            next.config.js
-            public
+          source: ".next/*,public/*,package.json,package-lock.json,next.config.js"
           target: ${{ secrets.PROJECT_PATH }}
 
-      - name: Restart application
+      - name: Restart application on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
