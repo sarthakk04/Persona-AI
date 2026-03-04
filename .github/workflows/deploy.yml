@@ -19,6 +19,5 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
             git pull origin main
-            npm install
-            npm run build
-            pm2 restart persona
+            npm install --production
+            pm2 restart persona || pm2 start npm --name persona -- start
