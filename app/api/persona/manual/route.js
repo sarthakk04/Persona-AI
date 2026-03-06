@@ -22,7 +22,7 @@ export const POST = asyncHandler(async (req) => {
   });
 
   return NextResponse.json(
-    ApiResponse(200, "Manual Persona Added successfully")
+    new ApiResponse(200, persona, "Manual Persona Added successfully")
   );
 });
 

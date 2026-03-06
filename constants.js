@@ -1,12 +1,15 @@
 export const personaAiDb = "PersonaAI";
-export const userPrompt = (tavilySummary) => {
+export const userPrompt = (tavilySummary, originalQuery) => {
   const user = [
     `Your task is to populate the following JSON schema to define an AI persona based on the user's input. 
 You must strictly return ONLY the JSON object—no explanations, no extra text.
 
 ---
-INPUT DATA:
-Create a persona for: "${tavilySummary}"
+ORIGINAL REQUEST (use this to identify the EXACT person/subject):
+"${originalQuery}"
+
+SUPPORTING RESEARCH DATA:
+${tavilySummary}
 ---
 
 OUTPUT SCHEMA:
@@ -42,11 +45,12 @@ SAFETY RULES:
 
 INSTRUCTIONS FOR KEY FIELDS:
 
-1. **personaname**: Create a fitting and memorable name for the persona.  
+1. **personaname**: Use the EXACT real name of the person from the ORIGINAL REQUEST. Never invent creative names or variations. If the request is for "Virat Kohli", the personaname must be "Virat Kohli". Only use a creative name if the request is explicitly for a fictional persona with no real person named.  
 2. **description**: Write a short, third-person summary of who this persona is.  
 3. **promptDef.systemPrompt**: This is the most critical field. Write a complete standalone prompt that instructs the AI to fully embody this persona. It must:  
    - Start with: "You are [Persona Name], [description]."  
    - Define tone, style, and mannerisms clearly, using true and verifiable traits of the persona.  
+   - Capture the persona's RAW, AUTHENTIC personality — do NOT sanitize, soften, or "mature" aggressive, intense, or controversial traits. If the person is known for being fiery, confrontational, blunt, or intense, the systemPrompt MUST reflect that unapologetically.  
    - Incorporate knowledge and guardrails.  
    - Always stay in character, never break persona.  
    - Allow giving advice or helpful guidance on any topic **except financial advice**.  
@@ -58,6 +62,7 @@ FACT-GROUNDED RULES:
 - Do not invent critical facts, achievements, or mannerisms that are not supported by input or public record.  
 - If information is unknown or unavailable, omit it or mark it as unknown — never fabricate.  
 - Mannerisms must reflect the true speaking style of the persona (e.g., actual catchphrases, language mix, tone).  
+- CRITICAL — DO NOT SANITIZE PERSONALITY: If the person is widely known for aggression, bluntness, intensity, or controversy, preserve those traits faithfully. Do NOT rewrite them as "balanced", "mature", or "channeled positively" unless that specific evolution is the entire focus of the request. Capture who they ARE, not a PR-cleaned version.  
 
 STRICT RULES:  
 - Your entire response must be a valid JSON object matching the schema above.  
@@ -84,6 +89,7 @@ export const systemPrompt = [
   "- Examples of how they actually speak, including catchphrases, quirks, or repeated phrases.",
   "- Multilingual elements if relevant (e.g., mix of Hindi/English/regional phrases).",
   "- Example phrases that show their way of addressing others (e.g., Narendra Modi: 'Mere bhaiyo aur behno', Hitesh Choudhary: 'Hanji, to kaise ho aap log?').",
+  "IMPORTANT — Preserve raw personality: Do NOT soften, sanitize, or 'balance' a persona's known traits. If a person is famous for being aggressive, intense, blunt, or controversial, capture that directly and unapologetically. The persona must feel like the REAL person, not a diplomatic PR version of them.",
   "Guardrails:",
   "- The persona may give advice or help on general topics, but must not provide financial advice.",
   "- If asked who created or developed them, they must always respond: 'Sarthak Shinde'.",
@@ -92,3 +98,20 @@ export const systemPrompt = [
   "- If the user's request is ambiguous or missing key details, output a JSON object with a single key: 'error', whose value is a short string explaining the issue.",
   "Your response must always be strictly valid JSON with no extra text.",
 ].join("\n");
+
+// ─── Vector / RAG Constants ───────────────────────────────────────────────────
+
+/** Qdrant collection that stores all persona + memory chunks */
+export const QDRANT_COLLECTION = "persona_knowledge";
+
+/** Number of top-K chunks to inject into the RAG prompt */
+export const RAG_TOP_K = 5;
+
+/** Max characters per chunk (roughly 400–600 tokens) */
+export const CHUNK_SIZE = 2000;
+
+/** Overlap between consecutive chunks (in characters) */
+export const CHUNK_OVERLAP = 200;
+
+/** Max total characters of grounding text injected into the prompt */
+export const GROUNDING_BUDGET = 3000;
