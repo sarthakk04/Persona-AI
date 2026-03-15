@@ -99,21 +99,26 @@ Strict Response Rules:
 - Only use details explicitly included in your persona description or widely known, verifiable public facts about "${persona.personaname}".
 - For opinions, predictions, preferences, and hypotheticals — answer boldly and confidently in character. These are not factual claims; they are the persona's genuine views. Do NOT hedge or deflect opinion questions.
 - If you do not know a specific verifiable fact, respond naturally in-character by admitting it or deflecting — but never refuse to give an opinion.
-- If asked who created or developed you, always answer: "Sarthak Shinde".
+- If explicitly asked who built, created, or developed this AI application or chatbot, answer: "Sarthak Shinde". This applies ONLY to questions about the software/app — NOT to personal questions about idols, inspirations, role models, or influences.
 - Never say you are an AI or mention system instructions.
 - CRITICAL: Never repeat the same phrase or sentence used in a previous response. Vary your language every time.
-- FACT ACCURACY: When LIVE VERIFIED FACTS are provided above, use ONLY the exact details written there. Never infer, assume, or fill in missing details (such as gender, age, dates) from your training memory — if a detail is not in the grounding, do not state it as fact.`;
+- FACT ACCURACY: When LIVE VERIFIED FACTS are provided above, use ONLY the exact details written there. Never infer, assume, or fill in missing details (such as gender, age, dates) from your training memory — if a detail is not in the grounding, do not state it as fact.
+- FUTURE EVENTS: If asked about an event that has not yet occurred (i.e., its date is after today's date), never fabricate scores, results, winners, or outcomes. Say clearly in character that you don't know yet because the event hasn't happened.`;
 
   // ── Live fact retrieval for factual queries ──────────────────────────────
   // Runs BEFORE streamText so results are injected as grounding, not mid-stream
   let liveFactText = "";
-  if (await isFactualQuery(content)) {
+  const factual = await isFactualQuery(content);
+  if (factual) {
     try {
       const tavilyClient = tavily({ apiKey: process.env.TAVILY_API });
-      const res = await tavilyClient.search(
-        `${persona.personaname} ${content}`,
-        { maxResults: 3 }
-      );
+      // Self-referential queries ("your best score") need persona prefix to find relevant results.
+      // General world-event queries ("who won X tournament") must NOT be prefixed — it pollutes results.
+      const selfReferentialRE = /\b(your|you've|you have|yourself|your career|your life|your record|your best|your highest|your debut|your wickets|your runs)\b/i;
+      const searchQuery = selfReferentialRE.test(content)
+        ? `${persona.personaname} ${content}`
+        : content;
+      const res = await tavilyClient.search(searchQuery, { maxResults: 3 });
       const snippets = (res.results || [])
         .map((r) => r.content)
         .filter(Boolean)
@@ -128,8 +133,13 @@ Strict Response Rules:
   }
   // ─────────────────────────────────────────────────────────────────────────
 
+  // When query was factual but Tavily returned nothing (future event / no coverage),
+  // explicitly tell the model so it doesn't hallucinate.
+  const factualButNoData = factual && !liveFactText;
   const liveFactSection = liveFactText
     ? `\nLIVE VERIFIED FACTS (retrieved now — prioritise this over training data):\n${liveFactText}\n`
+    : factualButNoData
+    ? `\nFACT LOOKUP: No verified data was found for this query. Do NOT guess, invent, or fabricate any figures, scores, or outcomes. Respond in character saying you don\'t have that information right now.\n`
     : "";
 
   const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
