@@ -149,7 +149,7 @@ export default function Home() {
                   className="text-xl text-purple-200 mb-8 max-w-2xl mx-auto"
                   style={{ fontFamily: "cardDesc" }}
                 >
-                  Join thousands of users already experiencing the future of
+                  Join our community of thousands of users already experiencing the future of
                   conversation with AI technology.
                 </p>
                 <button
